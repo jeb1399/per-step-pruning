@@ -2,30 +2,6 @@
 
 # Per-Step-Pruning (PSP) Callback for Hugging Face Transformers
 
-## Overview
-
-**Per-Step-Pruning (PSP)** is a custom `TrainerCallback` for Hugging Face's `transformers` library designed to allow efficient training of large models on smaller devices or to accelerate training on standard hardware. It dynamically masks a fraction of the model's trainable parameters during each training step based on their magnitude (L2 norm). 
-
-This makes it possible to:
-
-- Train larger models on devices with limited memory.
-- Speed up training without reducing model size.
-- Experiment with gradient sparsity and selective parameter updates.
-
-The callback works as follows:
-
-1. At the start of each training step, it computes the L2 norm of all trainable parameters.
-2. Sorts parameters by magnitude.
-3. Masks a specified fraction of the parameters with the highest L2 norm by zeroing their gradients.
-4. At the end of the step, ensures masked gradients remain zero, while leaving the parameters themselves trainable.
-
-## Features
-
-- Dynamic per-step gradient masking.
-- Configurable fraction of parameters to mask (`mask_fraction`).
-- Helps reduce memory footprint and accelerate training.
-- Fully compatible with Hugging Face `Trainer` API via callbacks.
-
 ## Installation
 
 Requires:
@@ -83,11 +59,43 @@ trainer.train()
 
 The callback prints the number of masked layers at each step for monitoring.
 
+## Quick Summary
+
+The PSP callback temporarily **disables a fraction of the strongest weights** in your model each training step.  
+
+- `mask_fraction` controls how many weights are disabled per step (e.g., 0.5 = half of the highest-magnitude weights).  
+- Only the **updates** are disabled for that step; the weights themselves are unchanged afterward.  
+- Mostly experimental — it **may help stabilize training**, but results can vary and it can also hurt learning if overused.  
+
+## Overview
+
+**Per-Step-Pruning (PSP)** is a custom `TrainerCallback` for Hugging Face's `transformers` library designed to allow efficient training of large models on smaller devices or to accelerate training on standard hardware. It dynamically masks a fraction of the model's trainable parameters during each training step based on their magnitude (L2 norm). 
+
+This makes it possible to:
+
+- Train larger models on devices with limited memory.
+- Speed up training without reducing model size.
+- Experiment with gradient sparsity and selective parameter updates.
+
+The callback works as follows:
+
+1. At the start of each training step, it computes the L2 norm of all trainable parameters.
+2. Sorts parameters by magnitude.
+3. Masks a specified fraction of the parameters with the highest L2 norm by zeroing their gradients.
+4. At the end of the step, ensures masked gradients remain zero, while leaving the parameters themselves trainable.
+
 ## Use Cases
 
 * **Train Large Models on Small Devices:** Reduce memory usage by masking gradients dynamically.
 * **Accelerate Training:** By masking gradients of large parameters, compute overhead is reduced per step.
 * **Experiment with Gradient Sparsity:** Useful for research on selective parameter updates and pruning strategies.
+
+## Features
+
+- Dynamic per-step gradient masking.
+- Configurable fraction of parameters to mask (`mask_fraction`).
+- Helps reduce memory footprint and accelerate training.
+- Fully compatible with Hugging Face `Trainer` API via callbacks.
 
 ## Notes
 
