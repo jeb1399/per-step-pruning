@@ -102,6 +102,3 @@ The callback works as follows:
 * Only gradients are masked per step; the actual parameters remain trainable.
 * `mask_fraction` should be chosen carefully; masking too many parameters may prevent the model from learning.
 * Frozen parameters (`requires_grad=False`) are ignored.
-
-```
-```
