@@ -46,11 +46,11 @@ class psp_callback(TrainerCallback):
         self.masked_layers = [name for name, _ in layer_scores[:num_to_mask]]
         for name, param in model.named_parameters():
             if name in self.masked_layers:
-                if not hasattr(param, '_tpspm_hook'):
-                    param._tpspm_hook = param.register_hook(lambda grad, _=param: grad * 0.0)
+                if not hasattr(param, '_psp_hook'):
+                    param._psp_hook = param.register_hook(lambda grad, _=param: grad * 0.0)
 
     def on_step_end(self, args, state, control, model, **kwargs):
         for name, param in model.named_parameters():
-            if hasattr(param, '_tpspm_hook'):
-                param._tpspm_hook.remove()
-                delattr(param, '_tpspm_hook')
+            if hasattr(param, '_psp_hook'):
+                param._psp_hook.remove()
+                delattr(param, '_psp_hook')
