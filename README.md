@@ -16,7 +16,7 @@ The callback works as follows:
 
 1. At the start of each training step, it computes the L2 norm of all trainable parameters.
 2. Sorts parameters by magnitude.
-3. Masks a specified fraction of the largest parameters by zeroing their gradients.
+3. Masks a specified fraction of the parameters with the highest L2 norm by zeroing their gradients.
 4. At the end of the step, ensures masked gradients remain zero, while leaving the parameters themselves trainable.
 
 ## Features
@@ -51,7 +51,7 @@ from psp_callback import psp_callback  # assuming saved in psp_callback.py
 psp = psp_callback(mask_fraction=0.5)
 ```
 
-`mask_fraction` controls the fraction of top-norm parameters to mask per step. For example, `mask_fraction=0.5` masks 50% of the largest parameters by magnitude.
+`mask_fraction` controls the fraction of top-norm parameters to mask per step. For example, `mask_fraction=0.5` masks 50% of the parameters with the highest L2 norm by magnitude.
 
 ### Step 2: Add Callback to Trainer
 
